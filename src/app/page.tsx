@@ -4,10 +4,10 @@ import Navbar from "@/components/Navbar";
 
 export default function Home() {
   return (
-    <main className="mx-[95px] my-[25px] flex flex-col gap-14">
+    <main className="md:mx-[90px] md:my-[24px] m-4 flex flex-col gap-10">
       <Navbar />
       <Header />
-      <section className="flex flex-col gap-4 md:px-20">
+      <section className="flex flex-col gap-4 md:px-14">
         <Card />
       </section>
     </main>

@@ -9,7 +9,7 @@ const Header = () => {
       <h1 className="text-6xl font-black dark:text-bilbao-500 text-light-primary">
         Github <span className="text-black dark:text-white">Stats</span>
       </h1>
-      <h1 className="text-border-theme-light/50 dark:text-border-theme text-xl">
+      <h1 className="text-border-theme-light/50 dark:text-border-theme text-xl hidden md:block">
         A platform where you can check top github profiles and there repo, open
         source contribution, collaborations make it better.
       </h1>

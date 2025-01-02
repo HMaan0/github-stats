@@ -14,6 +14,32 @@
   }
 }
 
+@media (prefers-color-scheme: dark) {
+  .graph-scrollbar::-webkit-scrollbar-thumb {
+    background: rgb(255 255 255 / 0.2); /* More visible contrast in dark mode */
+  }
+}
 body {
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.graph-scrollbar::-webkit-scrollbar {
+  width: 2px;
+  height: 2px;
+}
+
+.graph-scrollbar-light::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgb(0 0 0 / 0.1);
+}
+.graph-scrollbar-dark::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background: rgb(255 255 255 / 0.1);
+}
+
+.graph-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.graph-scrollbar {
+  padding-bottom: 5px;
 }
