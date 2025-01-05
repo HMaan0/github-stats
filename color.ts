@@ -22,6 +22,8 @@ export const color = [
   { Brainfuck: "#2F2530" },
   { "C#": "#178600" },
   { C: "#555555" },
+  { SCSS: "#AA336A" },
+
   { Chapel: "#8dc63f" },
   { Cirru: "#ccccff" },
   { Clarion: "#db901e" },
