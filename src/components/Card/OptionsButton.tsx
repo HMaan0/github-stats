@@ -1,11 +1,14 @@
 "use client";
 
-import React from "react";
-import { useState } from "react";
+import { useOptionsStore } from "@/store/selectedState";
+import React, { useEffect } from "react";
 
 const OptionsButton = ({ options }: { options: string[] }) => {
-  const [selected, setSelected] = useState(options[0]);
-
+  // const [selected, setSelected] = useState(options[0]);
+  const { selected, setSelected } = useOptionsStore();
+  useEffect(() => {
+    setSelected(options[0]);
+  }, []);
   return (
     <>
       <div className="p-2  flex justify-center items-center">
