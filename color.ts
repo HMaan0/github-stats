@@ -123,6 +123,7 @@ export const color = [
   { Nu: "#c9df40" },
   { "Objective-C": "#438eff" },
   { "Objective-C++": "#6866fb" },
+  { "C++": "#6866fb" },
   { "Objective-J": "#ff0c5a" },
   { OCaml: "#3be133" },
   { Omgrofl: "#cabbff" },

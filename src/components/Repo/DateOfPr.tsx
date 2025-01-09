@@ -5,14 +5,18 @@ import { PiGitMergeDuotone } from "react-icons/pi";
 const DateOfPr = ({
   dates,
 }: {
-  dates: { createdAt: string; mergedAt: string };
+  dates: { createdAt: string; mergedAt: string | null };
 }) => {
   const [createdDate, setCreatedDate] = useState("");
   const [mergedDate, setMergedDate] = useState("");
 
   useEffect(() => {
     setCreatedDate(new Date(dates.createdAt).toLocaleDateString());
-    setMergedDate(new Date(dates.mergedAt).toLocaleDateString());
+    if (dates.mergedAt) {
+      setMergedDate(new Date(dates.mergedAt).toLocaleDateString());
+    } else {
+      setMergedDate("not Merged");
+    }
   }, [dates.createdAt, dates.mergedAt]);
 
   return (

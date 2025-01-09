@@ -1,6 +1,5 @@
 import React from "react";
-import RepoCard from "./RepoCard";
-import { data } from "../../../data";
+import RepoCard from "../Repo/RepoCard";
 import { PiGitMergeDuotone } from "react-icons/pi";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import { RxCross1 } from "react-icons/rx";
@@ -8,36 +7,43 @@ import { FaCodeCommit } from "react-icons/fa6";
 import { CiSquarePlus } from "react-icons/ci";
 import { CiSquareMinus } from "react-icons/ci";
 import { PiFilesThin } from "react-icons/pi";
-import DateOfPr from "./DateOfPr";
+import DateOfPr from "../Repo/DateOfPr";
+import { Nodes } from "@harshmaan/github_rank_backend_types";
+import { RiGitClosePullRequestLine } from "react-icons/ri";
+import { IoIosGitPullRequest } from "react-icons/io";
+const PrCard = ({ nodes }: { nodes: Nodes }) => {
+  console.log(nodes);
 
-const PullRequest = () => {
-  const prs = data.data.collaboratedRepos;
   return (
     <>
-      {prs.map((pr, index) => (
+      {nodes.map((pr, index) => (
         <React.Fragment key={index}>
-          {pr.prInfo?.[0].title && (
+          {pr.title && (
             <RepoCard>
               <div className="flex justify-between items-center flex-wrap gap-2">
                 <div className="flex gap-2 items-center">
                   <FaCodeCommit className="text-light-primary dark:text-primary" />
                   <p className="text-lg">
-                    {pr.prInfo?.[0].title}{" "}
+                    {pr.title}
                     <span className="dark:text-white/20 text-black/20 ">
-                      #{pr.prInfo[0].number}
+                      #{pr.number}
                     </span>
                   </p>
                 </div>
-                {/* TODO: Make same for open and closed prs */}
                 <span
-                  className={`rounded-full py-1 px-3 flex gap-1 justify-between items-center ${
-                    pr.prInfo?.[0].state === "MERGED" &&
-                    "bg-purple-500 text-white"
-                  } 
+                  className={`rounded-full py-1 px-3 flex text-white gap-1 justify-between items-center ${
+                    pr.state === "MERGED" && "bg-purple-500 "
+                  } ${pr.state === "CLOSED" && "bg-red-500"} ${
+                    pr.state === "OPEN" && "bg-primary"
+                  }
+                   
                   `}
                 >
-                  <PiGitMergeDuotone />
-                  {pr.prInfo?.[0].state.toLocaleLowerCase()}
+                  {pr.state === "MERGED" && <PiGitMergeDuotone />}
+                  {pr.state === "CLOSED" && <RiGitClosePullRequestLine />}
+                  {pr.state === "OPEN" && <IoIosGitPullRequest />}
+
+                  {pr.state.toLocaleLowerCase()}
                 </span>
               </div>
               <div className="flex gap-2 ">
@@ -47,45 +53,51 @@ const PullRequest = () => {
                     <span className="dark:text-white/50 text-black/50">
                       Addition:{" "}
                     </span>
-                    {pr.prInfo[0].additions}
+                    {pr.additions}
                   </p>
                   <p className="flex  items-center gap-1.5">
                     <CiSquareMinus className="text-red-500" />
                     <span className="dark:text-white/50 text-black/50">
                       Deletion:{" "}
                     </span>{" "}
-                    {pr.prInfo[0].deletions}
+                    {pr.deletions}
                   </p>
                   <p className="flex  items-center gap-1.5 ">
                     <PiFilesThin className="text-blue-500" />
                     <span className="dark:text-white/50 text-black/50">
                       Files changed:{" "}
                     </span>
-                    {pr.prInfo[0].changedFiles}
+                    {pr.changedFiles}
                   </p>
                 </div>
                 <div className="flex flex-col ">
                   <span
                     title={
-                      pr.prInfo[0].mergeStateStatus === "DIRTY"
-                        ? "failed"
-                        : "passed"
+                      pr.mergeStateStatus === "UNKNOWN" ||
+                      pr.mergeStateStatus === "CLEAN"
+                        ? "passed"
+                        : "failed"
                     }
                     className={`${
-                      pr.prInfo[0].mergeStateStatus === "DIRTY"
-                        ? "bg-red-500"
-                        : "bg-primary"
+                      pr.mergeStateStatus === "UNKNOWN" ||
+                      pr.mergeStateStatus === "CLEAN"
+                        ? "bg-primary"
+                        : "bg-red-500"
                     } p-1 rounded-full w-min -translate-y-3`}
                   >
-                    {pr.prInfo[0].mergeStateStatus === "DIRTY" ? (
-                      <RxCross1 color="white" />
-                    ) : (
+                    {pr.mergeStateStatus === "UNKNOWN" ||
+                    pr.mergeStateStatus === "CLEAN" ? (
                       <IoCheckmarkOutline color="white" />
+                    ) : (
+                      <RxCross1 color="white" />
                     )}
                   </span>
                   <span className=" flex border border-secondary h-full w-min container m-auto"></span>
                 </div>
-                <DateOfPr dates={pr.prInfo[0]} />
+
+                <DateOfPr
+                  dates={{ createdAt: pr.createdAt, mergedAt: pr.mergedAt }}
+                />
               </div>
             </RepoCard>
           )}
@@ -95,4 +107,4 @@ const PullRequest = () => {
   );
 };
 
-export default PullRequest;
+export default PrCard;
