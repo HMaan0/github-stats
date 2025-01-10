@@ -21,7 +21,7 @@ import PrCount from "./PrCount";
 import PullRequests from "../PullRequest/PullRequests";
 import Line from "../Line";
 
-const Repo = () => {
+const Repo = ({ user }: { user: string }) => {
   const { selected } = useOptionsStore();
   const [ownedRepos, setOwnedRepos] = useState<allRepos | null>(null);
   const [collaboratedRepos, setCollaboratedRepos] =
@@ -33,11 +33,17 @@ const Repo = () => {
   useEffect(() => {
     const getUserGithub = async () => {
       try {
-        const res = await axios.get("http://10.0.0.101:3002/"); // http://localhost:3002/
+        console.log(user);
+
+        const res = await axios.get(`http://10.0.0.101:3002/${user}`); // http://localhost:3002/
         const userGithub: APIResponse = res.data;
+        console.log(userGithub.data);
+
         setOwnedRepos(userGithub.data.allRepos);
         setCollaboratedRepos(userGithub.data.collaboratedRepos);
         setForkedRepos(userGithub.data.forkedRepos);
+        console.log(userGithub.data.forkedRepos);
+
         setRepo(userGithub.data.allRepos);
       } catch (error) {
         console.error("Error fetching GitHub data:", error);
@@ -55,7 +61,8 @@ const Repo = () => {
     } else if (selected === "Forked Repos") {
       setRepo(forkedRepos);
     }
-  }, [collaboratedRepos, forkedRepos, ownedRepos, selected]);
+  }, [selected]);
+
   return (
     <>
       {repo?.map((repoInfo, index) => (

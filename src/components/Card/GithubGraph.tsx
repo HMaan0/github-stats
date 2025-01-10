@@ -1,9 +1,7 @@
 import axios from "axios";
-import React from "react";
-
-const GithubGraph = async () => {
+const GithubGraph = async ({ user }: { user: string }) => {
   const response = await axios(
-    "https://github-contributions-api.jogruber.de/v4/hkirat?y=2024"
+    `https://github-contributions-api.jogruber.de/v4/${user}?y=2024`
   );
   const contributions = response.data.contributions;
 
