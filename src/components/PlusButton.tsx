@@ -1,15 +1,23 @@
 "use client";
-import { useHide } from "@/store/Hide";
-import React from "react";
+import { useHide } from "@/Hooks/Hide";
+import React, { useEffect, useState } from "react";
 const PlusButton = ({ user }: { user: string }) => {
   const setHide = useHide((state) => state.setHide);
+  const [show, setShow] = useState(false);
+  useEffect(() => {
+    setHide(user);
+  }, []);
+  function handleClick() {
+    setHide(user);
+    setShow(!show);
+  }
   return (
     <>
       <button
-        onClick={() => setHide(user)}
-        className="font-bold text-6xl dark:text-accent text-light-accent"
+        onClick={handleClick}
+        className="font-bold bg-primary text-xl rounded-lg w-full md:w-1/3 container m-auto p-1"
       >
-        +
+        {show ? "collapse" : "expand"}
       </button>
     </>
   );

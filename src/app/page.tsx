@@ -7,7 +7,7 @@ export default function Home() {
     <main className="xl:mx-40 md:mx-[90px] md:my-[24px] m-4 flex flex-col gap-10">
       <Navbar />
       <Header />
-      <section className="flex flex-col gap-4 md:px-14 xl:px-36">
+      <section className="flex flex-col gap-10 md:px-14 xl:px-36">
         <Card />
       </section>
     </main>

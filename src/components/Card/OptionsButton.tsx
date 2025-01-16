@@ -1,10 +1,18 @@
 "use client";
 
-import { useOptionsStore } from "@/store/selectedState";
-import React from "react";
+//import { useOptionsStore } from "@/store/selectedState";
+import React, { Dispatch, SetStateAction } from "react";
 
-const OptionsButton = ({ options }: { options: string[] }) => {
-  const { selected, setSelected } = useOptionsStore();
+const OptionsButton = ({
+  options,
+  selected,
+  setSelected,
+}: {
+  options: string[];
+  selected: string;
+  setSelected: Dispatch<SetStateAction<string>>;
+}) => {
+  //const { selected, setSelected } = useOptionsStore();
   return (
     <>
       <div className="p-2  flex justify-center items-center">

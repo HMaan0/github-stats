@@ -1,5 +1,5 @@
 "use client";
-import { useUsernames } from "@/store/User";
+import { useUsernames } from "@/Hooks/User";
 import axios from "axios";
 import React, { useEffect } from "react";
 
@@ -18,8 +18,6 @@ const Testing = () => {
     }
     main();
   }, []);
-
-  console.log(username);
 
   return (
     <div>

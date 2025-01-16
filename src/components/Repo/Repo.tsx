@@ -8,21 +8,22 @@ import Languages from "./Languages";
 import { IoIosGitPullRequest } from "react-icons/io";
 import { VscIssues } from "react-icons/vsc";
 import RepoCard from "./RepoCard";
-import axios from "axios";
-import {
-  allRepos,
-  APIResponse,
-  collaboratedRepos,
-  forkedRepos,
-} from "@harshmaan/github_rank_backend_types";
-import React, { useEffect, useState } from "react";
-import { useOptionsStore } from "@/store/selectedState";
+
 import PrCount from "./PrCount";
 import PullRequests from "../PullRequest/PullRequests";
 import Line from "../Line";
+import React, { useEffect, useState } from "react";
+import {
+  allRepos,
+  collaboratedRepos,
+  forkedRepos,
+  APIResponse,
+} from "@harshmaan/github_rank_backend_types";
+import axios from "axios";
+import { useScore } from "@/Hooks/useScore";
 
-const Repo = ({ user }: { user: string }) => {
-  const { selected } = useOptionsStore();
+const Repo = ({ user, selected }: { user: string; selected: string }) => {
+  const pushScore = useScore((state) => state.setScore);
   const [ownedRepos, setOwnedRepos] = useState<allRepos | null>(null);
   const [collaboratedRepos, setCollaboratedRepos] =
     useState<collaboratedRepos | null>(null);
@@ -33,18 +34,13 @@ const Repo = ({ user }: { user: string }) => {
   useEffect(() => {
     const getUserGithub = async () => {
       try {
-        console.log(user);
-
         const res = await axios.get(`http://10.0.0.101:3002/${user}`); // http://localhost:3002/
         const userGithub: APIResponse = res.data;
-        console.log(userGithub.data);
-
         setOwnedRepos(userGithub.data.allRepos);
         setCollaboratedRepos(userGithub.data.collaboratedRepos);
         setForkedRepos(userGithub.data.forkedRepos);
-        console.log(userGithub.data.forkedRepos);
-
         setRepo(userGithub.data.allRepos);
+        pushScore(user, userGithub.score);
       } catch (error) {
         console.error("Error fetching GitHub data:", error);
       }
@@ -54,7 +50,6 @@ const Repo = ({ user }: { user: string }) => {
 
   useEffect(() => {
     if (selected === "Owned Repos") {
-      //setRepo(ownedRepos)
       setRepo(ownedRepos);
     } else if (selected === "Collaborated Repos") {
       setRepo(collaboratedRepos);
@@ -197,7 +192,12 @@ const Repo = ({ user }: { user: string }) => {
               )}
             </RepoCard>
             {selected !== "Owned Repos" && "prInfo" in repoInfo && (
-              <PullRequests nodes={repoInfo.prInfo.prInfo.search.nodes} />
+              <>
+                <PullRequests
+                  nodes={repoInfo.prInfo.prInfo.search.nodes}
+                  user={user}
+                />
+              </>
             )}
           </div>
           <Line className="last:hidden" />

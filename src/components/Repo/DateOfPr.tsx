@@ -21,7 +21,7 @@ const DateOfPr = ({
 
   return (
     <>
-      <div className="gap-1 m-2 flex flex-col w-full flex-wrap items-end text-right justify-between">
+      <div className="md:text-base text-xs sm:text-sm gap-1 m-2 flex flex-col w-full flex-wrap items-end text-right justify-between">
         <p className="flex  items-center gap-1.5 ">
           <MdRestartAlt className="text-yellow-500" />
           <span className="dark:text-white/50 text-black/50">Created: </span>
