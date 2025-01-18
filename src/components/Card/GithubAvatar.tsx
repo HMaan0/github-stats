@@ -6,7 +6,9 @@ import axios from "axios";
 const GithubAvatar = async ({ user }: { user: string }) => {
   // cacheLife("hours");
   const res = await axios(`https://api.github.com/users/${user}`);
+
   const avatarUrl = res.data.avatar_url;
+
   return (
     <>
       <div className="flex items-center h-max justify-center  ">

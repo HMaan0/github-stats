@@ -12,18 +12,23 @@ import RepoCard from "./RepoCard";
 import PrCount from "./PrCount";
 import PullRequests from "../PullRequest/PullRequests";
 import Line from "../Line";
-import React, { useEffect, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import {
   allRepos,
   collaboratedRepos,
   forkedRepos,
   APIResponse,
 } from "@harshmaan/github_rank_backend_types";
-import axios from "axios";
-import { useScore } from "@/Hooks/useScore";
 
-const Repo = ({ user, selected }: { user: string; selected: string }) => {
-  const pushScore = useScore((state) => state.setScore);
+const Repo = ({
+  user,
+  selected,
+  userGithub,
+}: {
+  user: string;
+  selected: string;
+  userGithub: APIResponse;
+}) => {
   const [ownedRepos, setOwnedRepos] = useState<allRepos | null>(null);
   const [collaboratedRepos, setCollaboratedRepos] =
     useState<collaboratedRepos | null>(null);
@@ -32,23 +37,6 @@ const Repo = ({ user, selected }: { user: string; selected: string }) => {
     allRepos | collaboratedRepos | forkedRepos | null
   >(null);
   useEffect(() => {
-    const getUserGithub = async () => {
-      try {
-        const res = await axios.get(`http://10.0.0.101:3002/${user}`); // http://localhost:3002/
-        const userGithub: APIResponse = res.data;
-        setOwnedRepos(userGithub.data.allRepos);
-        setCollaboratedRepos(userGithub.data.collaboratedRepos);
-        setForkedRepos(userGithub.data.forkedRepos);
-        setRepo(userGithub.data.allRepos);
-        pushScore(user, userGithub.score);
-      } catch (error) {
-        console.error("Error fetching GitHub data:", error);
-      }
-    };
-    getUserGithub();
-  }, []);
-
-  useEffect(() => {
     if (selected === "Owned Repos") {
       setRepo(ownedRepos);
     } else if (selected === "Collaborated Repos") {
@@ -56,7 +44,17 @@ const Repo = ({ user, selected }: { user: string; selected: string }) => {
     } else if (selected === "Forked Repos") {
       setRepo(forkedRepos);
     }
-  }, [selected]);
+  }, [collaboratedRepos, forkedRepos, ownedRepos, selected]);
+  useEffect(() => {
+    setOwnedRepos(userGithub.data.allRepos);
+    setCollaboratedRepos(userGithub.data.collaboratedRepos);
+    setForkedRepos(userGithub.data.forkedRepos);
+    setRepo(userGithub.data.allRepos);
+  }, [
+    userGithub.data.allRepos,
+    userGithub.data.collaboratedRepos,
+    userGithub.data.forkedRepos,
+  ]);
 
   return (
     <>
@@ -207,4 +205,4 @@ const Repo = ({ user, selected }: { user: string; selected: string }) => {
   );
 };
 
-export default Repo;
+export default memo(Repo);

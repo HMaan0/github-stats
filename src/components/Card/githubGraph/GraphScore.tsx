@@ -4,9 +4,11 @@ import Score from "./Score";
 const GraphScore = async ({
   total,
   user,
+  score,
 }: {
   total: { 2024: number };
   user: string;
+  score: number;
 }) => {
   const resp = await fetch(`https://api.github.com/users/${user}`);
   const data = await resp.json();
@@ -29,7 +31,7 @@ const GraphScore = async ({
         <p className="flex items-center ">
           <GoDotFill className="text-light-accent dark:text-accent" />
           Score
-          <Score user={user} />
+          <Score score={score} />
         </p>
       </div>
     </>

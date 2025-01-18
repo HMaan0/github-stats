@@ -25,17 +25,17 @@ body {
 
 .graph-scrollbar::-webkit-scrollbar {
   width: 2px;
-  height: 2px;
+  height: 6px;
 }
 
 .graph-scrollbar-light::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  background: rgb(0 0 0 / 0.1);
+  background: rgb(255 255 255/ 0.1);
 }
-.graph-scrollbar-dark::-webkit-scrollbar-thumb {
+/* .graph-scrollbar-dark::-webkit-scrollbar-thumb {
   border-radius: 10px;
-  background: rgb(255 255 255 / 0.1);
-}
+  background: pink;
+} */
 
 .graph-scrollbar::-webkit-scrollbar-track {
   background: transparent;
