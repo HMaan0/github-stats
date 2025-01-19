@@ -3,13 +3,7 @@
 import GraphScore from "./GraphScore";
 import axios from "axios";
 import { Suspense } from "react";
-const GithubGraph = async ({
-  user,
-  score,
-}: {
-  user: string;
-  score: number;
-}) => {
+const GithubGraph = async ({ user }: { user: string }) => {
   //  cacheLife("hours");
   const response = await axios(
     `https://github-contributions-api.jogruber.de/v4/${user}?y=2024`
@@ -23,7 +17,7 @@ const GithubGraph = async ({
 
   return (
     <>
-      <GraphScore total={totalContributions} user={user} score={score} />
+      <GraphScore total={totalContributions} user={user} />
       <Suspense fallback={<GithubGraphLoading />}>
         <div className="flex gap-[3px] overflow-x-auto graph-scrollbar dark:graph-scrollbar-dark graph-scrollbar-light">
           {weeks.map((week, weekIndex) => (

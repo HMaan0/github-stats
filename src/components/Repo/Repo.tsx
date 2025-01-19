@@ -19,16 +19,10 @@ import {
   forkedRepos,
   APIResponse,
 } from "@harshmaan/github_rank_backend_types";
+import axios from "axios";
+import { useScore } from "@/Hooks/useScore";
 
-const Repo = ({
-  user,
-  selected,
-  userGithub,
-}: {
-  user: string;
-  selected: string;
-  userGithub: APIResponse;
-}) => {
+const Repo = ({ user, selected }: { user: string; selected: string }) => {
   const [ownedRepos, setOwnedRepos] = useState<allRepos | null>(null);
   const [collaboratedRepos, setCollaboratedRepos] =
     useState<collaboratedRepos | null>(null);
@@ -36,6 +30,7 @@ const Repo = ({
   const [repo, setRepo] = useState<
     allRepos | collaboratedRepos | forkedRepos | null
   >(null);
+  const setScore = useScore((state) => state.setScore);
   useEffect(() => {
     if (selected === "Owned Repos") {
       setRepo(ownedRepos);
@@ -46,15 +41,18 @@ const Repo = ({
     }
   }, [collaboratedRepos, forkedRepos, ownedRepos, selected]);
   useEffect(() => {
-    setOwnedRepos(userGithub.data.allRepos);
-    setCollaboratedRepos(userGithub.data.collaboratedRepos);
-    setForkedRepos(userGithub.data.forkedRepos);
-    setRepo(userGithub.data.allRepos);
-  }, [
-    userGithub.data.allRepos,
-    userGithub.data.collaboratedRepos,
-    userGithub.data.forkedRepos,
-  ]);
+    async function fetch() {
+      const res = await axios(`http://10.0.0.101:3002/${user}`);
+      const userGithub: APIResponse = await res.data;
+      setOwnedRepos(userGithub.data.allRepos);
+      setCollaboratedRepos(userGithub.data.collaboratedRepos);
+      setForkedRepos(userGithub.data.forkedRepos);
+      setRepo(userGithub.data.allRepos);
+      setScore(user, userGithub.score);
+    }
+
+    fetch();
+  }, []);
 
   return (
     <>
