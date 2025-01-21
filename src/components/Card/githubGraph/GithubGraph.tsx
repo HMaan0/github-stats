@@ -1,18 +1,28 @@
-//"use cache";
-// import { unstable_cacheLife as cacheLife } from "next/cache";
+"use client";
 import GraphScore from "./GraphScore";
 import axios from "axios";
-import { Suspense } from "react";
-const GithubGraph = async ({ user }: { user: string }) => {
-  //  cacheLife("hours");
-  const response = await axios(
-    `https://github-contributions-api.jogruber.de/v4/${user}?y=2024`
-  );
-  const contributions = response.data.contributions;
-  const totalContributions = response.data.total;
+import { Suspense, useEffect, useState } from "react";
+const GithubGraph = ({ user }: { user: string }) => {
+  const [contributions, setContribution] = useState([]);
+  const [totalContributions, setTotalContribution] = useState({ 2024: 0 });
+  useEffect(() => {
+    async function fetch() {
+      const response = await axios(
+        `https://github-contributions-api.jogruber.de/v4/${user}?y=2024`
+      );
+      const contr = response.data.contributions;
+      const totalContr = response.data.total;
+      setContribution(contr);
+      setTotalContribution(totalContr);
+    }
+    fetch();
+  }, [user]);
+
   const weeks = [];
-  for (let i = 0; i < contributions.length; i += 7) {
-    weeks.push(contributions.slice(i, i + 7));
+  if (contributions.length > 0) {
+    for (let i = 0; i < contributions.length; i += 7) {
+      weeks.push(contributions.slice(i, i + 7));
+    }
   }
 
   return (

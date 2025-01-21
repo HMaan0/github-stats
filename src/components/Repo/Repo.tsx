@@ -19,10 +19,18 @@ import {
   forkedRepos,
   APIResponse,
 } from "@harshmaan/github_rank_backend_types";
-import axios from "axios";
 import { useScore } from "@/Hooks/useScore";
+import { getRedis, postRedis } from "@/lib/actions/postRedis";
 
-const Repo = ({ user, selected }: { user: string; selected: string }) => {
+const Repo = ({
+  user,
+  selected,
+  newUser,
+}: {
+  user: string;
+  selected: string;
+  newUser?: boolean;
+}) => {
   const [ownedRepos, setOwnedRepos] = useState<allRepos | null>(null);
   const [collaboratedRepos, setCollaboratedRepos] =
     useState<collaboratedRepos | null>(null);
@@ -41,18 +49,27 @@ const Repo = ({ user, selected }: { user: string; selected: string }) => {
     }
   }, [collaboratedRepos, forkedRepos, ownedRepos, selected]);
   useEffect(() => {
+    let data: { data: APIResponse } | undefined;
     async function fetch() {
-      const res = await axios(`http://10.0.0.101:3002/${user}`);
-      const userGithub: APIResponse = await res.data;
-      setOwnedRepos(userGithub.data.allRepos);
-      setCollaboratedRepos(userGithub.data.collaboratedRepos);
-      setForkedRepos(userGithub.data.forkedRepos);
-      setRepo(userGithub.data.allRepos);
-      setScore(user, userGithub.score);
+      if (newUser) {
+        const res = await postRedis(user);
+        data = res;
+      } else {
+        const res = await getRedis(user);
+        data = res;
+      }
+      if (data) {
+        const userGithub: APIResponse = data?.data;
+        setOwnedRepos(userGithub.data.allRepos);
+        setCollaboratedRepos(userGithub.data.collaboratedRepos);
+        setForkedRepos(userGithub.data.forkedRepos);
+        setRepo(userGithub.data.allRepos);
+        setScore(user, userGithub.score);
+      }
     }
 
     fetch();
-  }, []);
+  }, [user]);
 
   return (
     <>
@@ -65,11 +82,18 @@ const Repo = ({ user, selected }: { user: string; selected: string }) => {
                   <RiGitRepositoryLine className="text-white/45 " size={20} />
                   {selected === "Owned Repos" ||
                   selected === "Collaborated Repos" ? (
-                    <Link href={"http://localhost:3000"}>{repoInfo.name}</Link>
+                    <Link
+                      target="blank"
+                      href={`https://github.com/${user}/${repoInfo.name}`}
+                    >
+                      {repoInfo.name}
+                    </Link>
                   ) : (
                     <>
                       {"prInfo" in repoInfo && (
-                        <Link href={"http://localhost:3000"}>
+                        <Link
+                          href={`https://github.com/${user}/${repoInfo.parent?.name}`}
+                        >
                           {repoInfo.parent?.name}
                         </Link>
                       )}

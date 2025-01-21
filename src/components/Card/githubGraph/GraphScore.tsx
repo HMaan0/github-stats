@@ -1,15 +1,24 @@
+"use client";
 import { GoDotFill } from "react-icons/go";
 import Score from "./Score";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-const GraphScore = async ({
+const GraphScore = ({
   total,
   user,
 }: {
   total: { 2024: number };
   user: string;
 }) => {
-  const resp = await fetch(`https://api.github.com/users/${user}`);
-  const data = await resp.json();
+  const [data, setData] = useState({ public_repos: 0 });
+  useEffect(() => {
+    async function fetch() {
+      const userRes = await axios(`https://api.github.com/users/${user}`);
+      setData(userRes.data);
+    }
+    fetch();
+  }, [user]);
 
   return (
     <>
@@ -18,7 +27,7 @@ const GraphScore = async ({
           <GoDotFill className="text-light-accent dark:text-accent" />
           Repositories
           <span className="dark:text-white text-black m-1">
-            {data.public_repos}
+            {data.public_repos ? data.public_repos : 0}
           </span>
         </p>
         <p className="flex items-center ">

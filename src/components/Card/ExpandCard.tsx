@@ -6,7 +6,7 @@ import { useHide } from "@/Hooks/Hide";
 import { useEffect, useRef, useState } from "react";
 //import { useOptionsStore } from "@/store/selectedState";
 
-const ExpandCard = ({ user }: { user: string }) => {
+const ExpandCard = ({ user, newUser }: { user: string; newUser?: boolean }) => {
   const [selected, setSelected] = useState("Owned Repos");
   //const { selected } = useOptionsStore();
   const hideStates = useHide((state) => state.hide);
@@ -62,7 +62,7 @@ const ExpandCard = ({ user }: { user: string }) => {
           setSelected={setSelected}
         />
         <div className="flex flex-col-reverse gap-5 ">
-          <Repo user={user} selected={selected} />
+          <Repo user={user} selected={selected} newUser={newUser} />
         </div>
       </div>
     </div>

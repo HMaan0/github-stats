@@ -1,18 +1,27 @@
-// "use cache";
-import React, { Suspense } from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import axios from "axios";
-//import { unstable_cacheLife as cacheLife } from "next/cache";
-const GithubAvatar = async ({ user }: { user: string }) => {
-  // cacheLife("hours");
-  const res = await axios(`https://api.github.com/users/${user}`);
 
-  const avatarUrl = res.data.avatar_url;
+const GithubAvatar = ({ user }: { user: string }) => {
+  const [avatarUrl, setAvatarUrl] = useState("");
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    async function fetch() {
+      const res = await axios(`https://api.github.com/users/${user}`);
+      const url = res.data.avatar_url;
+      setAvatarUrl(url);
+      setLoading(false);
+    }
+    fetch();
+  }, [user]);
 
   return (
     <>
       <div className="flex items-center h-max justify-center  ">
-        <Suspense fallback={<ImageLoading />}>
+        {loading ? (
+          <ImageLoading />
+        ) : (
           <Image
             src={avatarUrl}
             width={"85"}
@@ -20,7 +29,7 @@ const GithubAvatar = async ({ user }: { user: string }) => {
             alt="gitHub avatars"
             className="rounded-lg"
           />
-        </Suspense>
+        )}
       </div>
     </>
   );
