@@ -11,6 +11,7 @@ const PlusButton = ({ user }: { user: string }) => {
     setHide(user);
     setShow(!show);
   }
+
   return (
     <>
       <button

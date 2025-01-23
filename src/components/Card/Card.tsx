@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, memo } from "react";
 import ExpandCard from "./ExpandCard";
 import PlusButton from "../PlusButton";
 import Line from "../Line";
@@ -7,16 +7,24 @@ import GithubAvatar from "./GithubAvatar";
 import GithubGraph from "./githubGraph/GithubGraph";
 import { useScore } from "@/Hooks/useScore";
 import { useSession } from "next-auth/react";
+import { useUsers } from "@/Hooks/useUsers";
+import { useSortedUsers } from "@/Hooks/SortedUser";
+import { useTime } from "@/Hooks/Time";
+import { differenceInMinutes, differenceInHours } from "date-fns";
 
 const Card = () => {
-  const session = useSession();
-  const [sortedUsers, setSortedUsers] = useState([
-    "SLYxCx",
-    "Dnicholson1966",
-    "brarkaran2004",
-  ]);
+  const { data: session } = useSession();
+  const { users } = useUsers();
+  const sortedUsers = useSortedUsers((state) => state.sortedUsers);
+  const setSortedUsers = useSortedUsers((state) => state.setSortedUsers);
   const scores = useScore((state) => state.scores);
-  const username = session.data?.user.username;
+  const username = session?.user?.username;
+  const time = useTime((state) => state.time);
+  useEffect(() => {
+    if (users && users.length > 0) {
+      setSortedUsers(users);
+    }
+  }, [users]);
 
   useEffect(() => {
     if (Object.keys(scores).length > 0) {
@@ -30,32 +38,66 @@ const Card = () => {
 
   return (
     <>
-      {username === undefined ? (
-        sortedUsers.map((user, index) => (
-          <UserCard key={user} user={user} index={index} />
-        ))
-      ) : username && !sortedUsers.includes(username) ? (
+      {sortedUsers.length > 0 ? (
         <>
-          <UserCard user={username} index={0} newUser={true} />
+          {username === undefined ? (
+            sortedUsers.map((user, index) => (
+              <UserCard
+                key={index}
+                user={user}
+                index={index}
+                lastFetched={time[user]}
+              />
+            ))
+          ) : username && !sortedUsers.includes(username) ? (
+            <UserCard
+              user={username}
+              index={0}
+              newUser={true}
+              lastFetched={time[username]}
+            />
+          ) : (
+            sortedUsers.map((user, index) => (
+              <UserCard
+                key={index}
+                user={user}
+                index={index}
+                lastFetched={time[user]}
+              />
+            ))
+          )}
         </>
       ) : (
-        sortedUsers.map((user, index) => (
-          <UserCard key={user} user={user} index={index} />
-        ))
+        <p className="text-center text-accent">Loading...</p>
       )}
     </>
   );
 };
-
 const UserCard = ({
   user,
   index,
   newUser,
+  lastFetched,
 }: {
   user: string;
   index: number;
   newUser?: boolean;
+  lastFetched: string | null;
 }) => {
+  const now = new Date();
+  const fetchedTime = lastFetched ? new Date(lastFetched) : null;
+  let timeDiff = "N/A";
+
+  if (fetchedTime) {
+    const diffInMinutes = differenceInMinutes(now, fetchedTime);
+
+    if (diffInMinutes < 60) {
+      timeDiff = `${diffInMinutes} min${diffInMinutes === 1 ? "" : "s"} ago`;
+    } else {
+      const diffInHours = differenceInHours(now, fetchedTime);
+      timeDiff = `${diffInHours} hour${diffInHours === 1 ? "" : "s"} ago`;
+    }
+  }
   return (
     <div
       key={user}
@@ -72,7 +114,9 @@ const UserCard = ({
                 <span className="relative inline-flex rounded-full h-3 w-3 dark:bg-primary bg-light-primary"></span>
               </span>
               Last fetched
-              <span className="dark:text-white text-black mr-1">2hr</span>
+              <span className="dark:text-white text-black mr-1">
+                {timeDiff}
+              </span>
             </p>
           </div>
         </div>
@@ -98,4 +142,4 @@ const UserCard = ({
     </div>
   );
 };
-export default Card;
+export default memo(Card);

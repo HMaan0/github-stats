@@ -21,6 +21,10 @@ import {
 } from "@harshmaan/github_rank_backend_types";
 import { useScore } from "@/Hooks/useScore";
 import { getRedis, postRedis } from "@/lib/actions/postRedis";
+import { useSortedUsers } from "@/Hooks/SortedUser";
+import { postDB } from "@/lib/actions/postDB";
+import { useTime } from "@/Hooks/Time";
+import { getTimeOfUser } from "@/lib/actions/getTimeOfUser";
 
 const Repo = ({
   user,
@@ -39,6 +43,9 @@ const Repo = ({
     allRepos | collaboratedRepos | forkedRepos | null
   >(null);
   const setScore = useScore((state) => state.setScore);
+  const sortedUsers = useSortedUsers((state) => state.sortedUsers);
+  const setNewUsername = useSortedUsers((state) => state.setNewUsername);
+  const setTime = useTime((state) => state.setTime);
   useEffect(() => {
     if (selected === "Owned Repos") {
       setRepo(ownedRepos);
@@ -54,8 +61,16 @@ const Repo = ({
       if (newUser) {
         const res = await postRedis(user);
         data = res;
+        if (!sortedUsers.includes(user)) {
+          setNewUsername(user);
+        }
+        await postDB(user);
       } else {
         const res = await getRedis(user);
+        const fetchedTime = await getTimeOfUser(user);
+        if (fetchedTime) {
+          setTime(user, fetchedTime);
+        }
         data = res;
       }
       if (data) {
