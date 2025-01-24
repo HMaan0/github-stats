@@ -2,13 +2,16 @@
 import { APIResponse } from "@harshmaan/github_rank_backend_types";
 import axios from "axios";
 import { createClient } from "redis";
+import prisma from "../db";
 const client = createClient();
 export async function postRedis(
   username: string
 ): Promise<{ data: APIResponse; time: string } | undefined> {
   try {
-    await client.connect();
-    const res = await axios.get(`http://localhost:3002/${username}`);
+    if (!client.isOpen) {
+      await client.connect();
+    }
+    const res = await axios.get(`${process.env.BACKEND_URL}${username}`);
     const data: APIResponse = await res.data;
     const time = new Date().toISOString();
     await client.set(username, JSON.stringify(data));
@@ -23,7 +26,9 @@ export async function getRedis(
   user: string
 ): Promise<{ data: APIResponse } | undefined> {
   try {
-    await client.connect();
+    if (!client.isOpen) {
+      await client.connect();
+    }
     const res = await client.get(user);
     const userGithub = res && JSON.parse(res);
     return { data: userGithub };
@@ -39,11 +44,11 @@ export async function polling() {
   const INTERVAL = 60 * 60 * 1000;
 
   try {
-    if (client.isOpen) {
+    if (!client.isOpen) {
       await client.connect();
     }
     while (true) {
-      const usersArr = await prisma?.users.findMany({
+      const usersArr = await prisma.users.findMany({
         select: {
           user: true,
         },
@@ -58,7 +63,7 @@ export async function polling() {
 
           for (const user of batch) {
             try {
-              const res = await axios(`http://localhost:3002/${user}`);
+              const res = await axios(`${process.env.BACKEND_URL}${user}`);
               const data: APIResponse = await res.data;
               const time = new Date().toISOString();
               await client.del(user);

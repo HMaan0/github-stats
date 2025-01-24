@@ -57,7 +57,9 @@ const Languages = ({
                   style={{ backgroundColor: `${language.color}` }}
                 ></span>
                 <p>{language.name}</p>
-                <p className=" text-white/45">{language.size}%</p>
+                <p className="dark:text-white/45 text-black/45">
+                  {language.size}%
+                </p>
               </div>
             )}
           </React.Fragment>

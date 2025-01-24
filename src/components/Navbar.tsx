@@ -36,14 +36,14 @@ const Navbar = () => {
       animate={{ y: show ? 0 : -100, opacity: show ? 1 : 0 }}
       transition={{ duration: 0.5, ease: "easeInOut" }}
     >
-      <h1 className="text-5xl font-bold md:hidden">
+      <h1 className="text-4xl sm:text-5xl font-bold md:hidden">
         G<span className="text-primary">&</span>S
       </h1>
       <h1 className="text-5xl font-bold hidden md:block">
         Github
         <span className="dark:text-primary text-light-primary"> Stats</span>
       </h1>
-      <div className="flex md:gap-12 gap-7 sm:gap-10 items-center justify-between">
+      <div className="flex md:gap-12 gap-3 sm:gap-10 items-center justify-between">
         <div className="flex sm:gap-2 gap-1  items-center">
           <IoSunnyOutline size={25} />
           <DarkModeButton />

@@ -1,12 +1,9 @@
 import Card from "@/components/Card/Card";
-import { polling } from "@/lib/actions/postRedis";
-import React from "react";
 
-const Section = async () => {
-  await polling();
+const Section = () => {
   return (
     <>
-      <section className="flex flex-col gap-10 md:px-14 xl:px-36">
+      <section className="flex flex-col  gap-10 md:px-14 xl:px-36">
         <Card />
       </section>
     </>

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, memo } from "react";
+import { useEffect, memo, useState } from "react";
 import ExpandCard from "./ExpandCard";
 import PlusButton from "../PlusButton";
 import Line from "../Line";
@@ -11,8 +11,11 @@ import { useUsers } from "@/Hooks/useUsers";
 import { useSortedUsers } from "@/Hooks/SortedUser";
 import { useTime } from "@/Hooks/Time";
 import { differenceInMinutes, differenceInHours } from "date-fns";
+import Link from "next/link";
+import CardLoading from "./CardLoading";
 
 const Card = () => {
+  const [loading, setLoading] = useState(true);
   const { data: session } = useSession();
   const { users } = useUsers();
   const sortedUsers = useSortedUsers((state) => state.sortedUsers);
@@ -23,6 +26,7 @@ const Card = () => {
   useEffect(() => {
     if (users && users.length > 0) {
       setSortedUsers(users);
+      setLoading(false);
     }
   }, [users]);
 
@@ -33,42 +37,59 @@ const Card = () => {
         .sort((a, b) => b.score - a.score);
 
       setSortedUsers(sortedUsersScore.map((item) => item.user));
+      setLoading(false);
     }
   }, [scores]);
 
   return (
     <>
-      {sortedUsers.length > 0 ? (
+      {loading ? (
         <>
-          {username === undefined ? (
-            sortedUsers.map((user, index) => (
-              <UserCard
-                key={index}
-                user={user}
-                index={index}
-                lastFetched={time[user]}
-              />
-            ))
-          ) : username && !sortedUsers.includes(username) ? (
-            <UserCard
-              user={username}
-              index={0}
-              newUser={true}
-              lastFetched={time[username]}
-            />
-          ) : (
-            sortedUsers.map((user, index) => (
-              <UserCard
-                key={index}
-                user={user}
-                index={index}
-                lastFetched={time[user]}
-              />
-            ))
-          )}
+          <CardLoading />
+          <CardLoading />
+          <CardLoading />
+          <CardLoading />
         </>
       ) : (
-        <p className="text-center text-accent">Loading...</p>
+        <>
+          {sortedUsers.length > 0 ? (
+            <>
+              {username === undefined ? (
+                sortedUsers.map((user, index) => (
+                  <UserCard
+                    key={index}
+                    user={user}
+                    index={index}
+                    lastFetched={time[user]}
+                  />
+                ))
+              ) : username && !sortedUsers.includes(username) ? (
+                <UserCard
+                  user={username}
+                  index={0}
+                  newUser={true}
+                  lastFetched={time[username]}
+                />
+              ) : (
+                sortedUsers.map((user, index) => (
+                  <UserCard
+                    key={index}
+                    user={user}
+                    index={index}
+                    lastFetched={time[user]}
+                  />
+                ))
+              )}
+            </>
+          ) : (
+            <>
+              <CardLoading />
+              <CardLoading />
+              <CardLoading />
+              <CardLoading />
+            </>
+          )}
+        </>
       )}
     </>
   );
@@ -86,7 +107,7 @@ const UserCard = ({
 }) => {
   const now = new Date();
   const fetchedTime = lastFetched ? new Date(lastFetched) : null;
-  let timeDiff = "N/A";
+  let timeDiff = "0";
 
   if (fetchedTime) {
     const diffInMinutes = differenceInMinutes(now, fetchedTime);
@@ -107,13 +128,15 @@ const UserCard = ({
         <div className="w-full flex gap-3">
           <GithubAvatar user={user} />
           <div className="flex flex-col justify-between py-2">
-            <p className="font-semibold text-md md:text-xl">{user}</p>
+            <Link href={`https://github.com/${user}`} target="blank">
+              <p className="font-semibold text-md md:text-xl">{user}</p>
+            </Link>
             <p className="dark:text-white/50 text-black/50 text-sm flex items-center gap-2">
               <span className="relative flex h-3 w-3">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full dark:bg-primary bg-light-primary opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-3 w-3 dark:bg-primary bg-light-primary"></span>
               </span>
-              Last fetched
+              Last fetch
               <span className="dark:text-white text-black mr-1">
                 {timeDiff}
               </span>

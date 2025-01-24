@@ -20,13 +20,12 @@ export function useUserGithub(user: string, selected: string) {
   useEffect(() => {
     const getUserGithub = async () => {
       try {
-        const res = await axios.get(`http://10.0.0.101:3002/${user}`); // http://localhost:3002/
+        const res = await axios.get(`${process.env.BACKEND_URL}${user}`);
         const userGithub: APIResponse = res.data;
         setOwnedRepos(userGithub.data.allRepos);
         setCollaboratedRepos(userGithub.data.collaboratedRepos);
         setForkedRepos(userGithub.data.forkedRepos);
         setRepo(userGithub.data.allRepos);
-        //pushScore(user, userGithub.data.score);
       } catch (error) {
         console.error("Error fetching GitHub data:", error);
       }

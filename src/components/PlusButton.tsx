@@ -16,7 +16,7 @@ const PlusButton = ({ user }: { user: string }) => {
     <>
       <button
         onClick={handleClick}
-        className="font-bold bg-primary text-xl rounded-lg w-full md:w-1/3 container m-auto p-1"
+        className="text-white font-bold bg-primary text-xl rounded-lg w-full md:w-1/3 container m-auto p-1"
       >
         {show ? "collapse" : "expand"}
       </button>

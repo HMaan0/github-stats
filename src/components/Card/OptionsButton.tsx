@@ -1,6 +1,5 @@
 "use client";
 
-//import { useOptionsStore } from "@/store/selectedState";
 import React, { Dispatch, SetStateAction } from "react";
 
 const OptionsButton = ({
@@ -12,7 +11,6 @@ const OptionsButton = ({
   selected: string;
   setSelected: Dispatch<SetStateAction<string>>;
 }) => {
-  //const { selected, setSelected } = useOptionsStore();
   return (
     <>
       <div className="p-2  flex justify-center items-center">
@@ -30,7 +28,7 @@ const OptionsButton = ({
                 {option}
               </button>
               {index !== options.length - 1 && (
-                <span className="border-l-2 border-white/15 my-1"></span>
+                <span className="border-l-2 border-black/15 dark:border-white/15 my-1"></span>
               )}
             </React.Fragment>
           ))}

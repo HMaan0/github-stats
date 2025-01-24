@@ -18,7 +18,7 @@ const Login = ({ hideLogin }: { hideLogin: () => void }) => {
           className="w-full md:px-4.5 md:py-2 px-3 py-1.5 bg-light-primary dark:bg-primary hover:bg-accent rounded-lg text-lg font-semibold "
           onClick={() =>
             signIn("github", {
-              callbackUrl: "http://localhost:3000",
+              callbackUrl: process.env.CALLBACK_URL,
               redirect: true,
             })
           }

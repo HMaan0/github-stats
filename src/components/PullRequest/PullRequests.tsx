@@ -15,7 +15,7 @@ const PullRequests = ({ nodes, user }: { nodes: Nodes; user: string }) => {
             <div className="w-full flex items-center justify-center mt-4">
               <button
                 onClick={() => setShowPr(!showPr)}
-                className="border border-accent rounded-lg w-full md:w-1/2 py-1 font-semibold"
+                className="border-2 dark:border border-light-accent dark:border-accent rounded-lg w-full md:w-1/2 py-1 font-semibold"
               >
                 {showPr
                   ? `hide pull requests by ${user}`
@@ -31,7 +31,6 @@ const PullRequests = ({ nodes, user }: { nodes: Nodes; user: string }) => {
                       selected={selected}
                       setSelected={setSelected}
                     />
-                    {/* <OptionsButton options={["Top Prs", "Latest", "Oldest"]} /> */}
                   </div>
                 </div>
                 <div className="flex flex-col gap-2 ">

@@ -13,8 +13,6 @@ import { RiGitClosePullRequestLine } from "react-icons/ri";
 import { IoIosGitPullRequest } from "react-icons/io";
 const PrCard = ({ nodes, selected }: { nodes: Nodes; selected: string }) => {
   const normalizedSelected = selected.toLowerCase();
-
-  // Filter nodes based on normalizedSelected
   nodes = nodes.filter((x) => x.state.toLowerCase() === normalizedSelected);
   return (
     <>
@@ -27,7 +25,7 @@ const PrCard = ({ nodes, selected }: { nodes: Nodes; selected: string }) => {
           {nodes.map((pr, index) => (
             <React.Fragment key={index}>
               {pr.title && (
-                <RepoCard className="bg-transparent border border-secondary">
+                <RepoCard className="bg-transparent  dark:border-accent border-2 dark:border border-light-accent">
                   <div className="flex justify-between items-center flex-wrap gap-2">
                     <div className="flex gap-2 items-center">
                       <FaCodeCommit className="text-light-primary dark:text-primary" />
@@ -101,10 +99,10 @@ const PrCard = ({ nodes, selected }: { nodes: Nodes; selected: string }) => {
                         )}
                       </span>
                       <span
-                        className={`flex border border-secondary ${
+                        className={`flex border dark:border-accent border-light-accent ${
                           pr.mergeStateStatus === "UNKNOWN" ||
                           pr.mergeStateStatus === "CLEAN"
-                            ? "border-secondary"
+                            ? "border-light-accent dark:border-accent"
                             : "border-red-500"
                         } h-full w-min container m-auto`}
                       ></span>
