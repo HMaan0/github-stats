@@ -1,7 +1,12 @@
 "use server";
 import { createClient } from "redis";
 
-const client = createClient();
+const client = createClient({
+  socket: {
+    host: process.env.REDIS_HOST || "localhost",
+    port: Number(process.env.REDIS_PORT) || 6379,
+  },
+});
 export async function getTimeOfUser(user: string) {
   try {
     if (!client.isOpen) {

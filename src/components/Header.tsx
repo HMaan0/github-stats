@@ -10,8 +10,8 @@ const Header = () => {
         Github <span className="text-black dark:text-white">Stats</span>
       </h1>
       <h1 className="text-border-theme-light/50 dark:text-border-theme text-xl hidden md:block">
-        A platform where you can check top github profiles and there repo, open
-        source contribution, collaborations make it better.
+        A platform where you can check top github profiles and there public
+        repositories, open source contribution, collaborations.
       </h1>
     </header>
   );

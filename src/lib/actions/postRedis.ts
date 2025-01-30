@@ -3,7 +3,12 @@ import { APIResponse } from "@harshmaan/github_rank_backend_types";
 import axios from "axios";
 import { createClient } from "redis";
 import prisma from "../db";
-const client = createClient();
+const client = createClient({
+  socket: {
+    host: process.env.REDIS_HOST || "localhost",
+    port: Number(process.env.REDIS_PORT) || 6379,
+  },
+});
 export async function postRedis(
   username: string
 ): Promise<{ data: APIResponse; time: string } | undefined> {

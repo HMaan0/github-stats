@@ -10,7 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@harshmaan/github_rank_backend_types": "^1.0.0",
+    "@harshmaan/github_rank_backend_types": "^1.0.2",
     "@prisma/client": "^6.2.1",
     "axios": "^1.7.9",
     "date-fns": "^4.1.0",
