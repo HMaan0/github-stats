@@ -31,6 +31,8 @@ jobs:
             SECRET_GITHUB=${{secrets.SECRET_GITHUB}}
             DATABASE_URL=${{secrets.DATABASE_URL}}
             ADMIN_USERNAME=${{secrets.ADMIN_USERNAME}}
+            REDIS_HOST=${{secrets.REDIS_HOST}}
+            REDIS_PORT=${{secrets.REDIS_PORT}}
           context: .
           file: ./dockerfile
           push: true
@@ -45,6 +47,8 @@ jobs:
           SECRET_GITHUB: ${{secrets.SECRET_GITHUB}}
           DATABASE_URL: ${{secrets.DATABASE_URL}}
           ADMIN_USERNAME: ${{secrets.ADMIN_USERNAME}}
+          REDIS_HOST: ${{secrets.REDIS_HOST}}
+          REDIS_PORT: ${{secrets.REDIS_PORT}}
 
       - name: Verify Pushed Image
         run: docker pull harsh0maan/github_stats:latest
