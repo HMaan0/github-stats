@@ -8,7 +8,6 @@ import Languages from "./Languages";
 import { IoIosGitPullRequest } from "react-icons/io";
 import { VscIssues } from "react-icons/vsc";
 import RepoCard from "./RepoCard";
-
 import PrCount from "./PrCount";
 import PullRequests from "../PullRequest/PullRequests";
 import Line from "../Line";
@@ -19,25 +18,20 @@ import {
   forkedRepos,
   APIResponse,
 } from "@harshmaan/github_rank_backend_types";
-import { useScore } from "@/Hooks/useScore";
-import { getRedis, postRedis } from "@/lib/actions/postRedis";
-import { useSortedUsers } from "@/Hooks/SortedUser";
-import { postDB } from "@/lib/actions/postDB";
-import { useTime } from "@/Hooks/Time";
-import { getTimeOfUser } from "@/lib/actions/getTimeOfUser";
 import LoadingSpinner from "../LoadingSpinner";
 import NoRepositories from "../NoRepositories";
 
 const Repo = ({
   user,
   selected,
-  newUser,
+  userData,
+  loading,
 }: {
   user: string;
   selected: string;
-  newUser?: boolean;
+  userData: APIResponse | null;
+  loading: boolean;
 }) => {
-  const [loading, setLoading] = useState(true);
   const [ownedRepos, setOwnedRepos] = useState<allRepos | null>(null);
   const [collaboratedRepos, setCollaboratedRepos] =
     useState<collaboratedRepos | null>(null);
@@ -45,10 +39,15 @@ const Repo = ({
   const [repo, setRepo] = useState<
     allRepos | collaboratedRepos | forkedRepos | null
   >(null);
-  const setScore = useScore((state) => state.setScore);
-  const sortedUsers = useSortedUsers((state) => state.sortedUsers);
-  const setNewUsername = useSortedUsers((state) => state.setNewUsername);
-  const setTime = useTime((state) => state.setTime);
+
+  useEffect(() => {
+    if (userData) {
+      setOwnedRepos(userData.data.allRepos);
+      setCollaboratedRepos(userData.data.collaboratedRepos);
+      setForkedRepos(userData.data.forkedRepos);
+    }
+  }, [userData]);
+
   useEffect(() => {
     if (selected === "Owned Repos") {
       setRepo(ownedRepos);
@@ -58,45 +57,13 @@ const Repo = ({
       setRepo(forkedRepos);
     }
   }, [collaboratedRepos, forkedRepos, ownedRepos, selected]);
-  useEffect(() => {
-    setLoading(true);
-    let data: { data: APIResponse } | undefined;
-    async function fetch() {
-      if (newUser) {
-        const res = await postRedis(user);
-        data = res;
-        if (!sortedUsers.includes(user)) {
-          setNewUsername(user);
-        }
-        await postDB(user);
-      } else {
-        const res = await getRedis(user);
-        const fetchedTime = await getTimeOfUser(user);
-        if (fetchedTime) {
-          setTime(user, fetchedTime);
-        }
-        data = res;
-      }
-      if (data) {
-        const userGithub: APIResponse = data?.data;
-        setOwnedRepos(userGithub.data.allRepos);
-        setCollaboratedRepos(userGithub.data.collaboratedRepos);
-        setForkedRepos(userGithub.data.forkedRepos);
-        setRepo(userGithub.data.allRepos);
-        setScore(user, userGithub.score);
-        setLoading(false);
-      }
-    }
-
-    fetch();
-  }, [user]);
 
   return (
     <>
       {loading ? (
         <>
           <LoadingSpinner />
-          {newUser && (
+          {user && (
             <div className="flex flex-col items-center mt-5 ">
               <FaGithub className="text-4xl text-accent" />
               <p className="text-center text-lg font-semibold text-accent">

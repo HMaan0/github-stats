@@ -4,50 +4,22 @@ import Repo from "../Repo/Repo";
 import Line from "../Line";
 import { useHide } from "@/Hooks/Hide";
 import { useState } from "react";
-//import { useOptionsStore } from "@/store/selectedState";
+import { APIResponse } from "@harshmaan/github_rank_backend_types";
 
-const ExpandCard = ({ user, newUser }: { user: string; newUser?: boolean }) => {
+const ExpandCard = ({
+  user,
+  userData,
+  loading,
+}: {
+  user: string;
+  userData: APIResponse | null;
+  loading: boolean;
+}) => {
   const [selected, setSelected] = useState("Owned Repos");
-  //const { selected } = useOptionsStore();
   const hideStates = useHide((state) => state.hide);
-  const isHidden = hideStates[user] ?? true;
 
-  //const contentRef = useRef<HTMLDivElement>(null);
-  //const [height, setHeight] = useState<number | "auto">(0);
+  const isHidden = hideStates[user] ?? false;
 
-  // useEffect(() => {
-  //   const updateHeight = () => {
-  //     if (contentRef.current) {
-  //       if (!isHidden) {
-  //         setHeight(contentRef.current.scrollHeight);
-  //       } else {
-  //         setHeight(0);
-  //       }
-  //     }
-  //   };
-  //   updateHeight();
-  //   const observer = new MutationObserver(() => {
-  //     updateHeight();
-  //   });
-
-  //   if (contentRef.current) {
-  //     observer.observe(contentRef.current, {
-  //       childList: true,
-  //       subtree: true,
-  //     });
-  //   }
-
-  //   return () => {
-  //     if (contentRef.current) {
-  //       observer.disconnect();
-  //     }
-  //   };
-  // }, [isHidden]);
-  // useEffect(() => {
-  //   if (contentRef.current && !isHidden) {
-  //     setHeight(contentRef.current.scrollHeight);
-  //   }
-  // }, [selected, isHidden]);
   return (
     <div className="flex-col gap-3 overflow-hidden transition-[height] duration-300">
       <div className="flex flex-col gap-5">
@@ -60,7 +32,12 @@ const ExpandCard = ({ user, newUser }: { user: string; newUser?: boolean }) => {
               setSelected={setSelected}
             />
             <div className="flex flex-col-reverse gap-5 ">
-              <Repo user={user} selected={selected} newUser={newUser} />
+              <Repo
+                user={user}
+                selected={selected}
+                userData={userData}
+                loading={loading}
+              />
             </div>
           </>
         )}

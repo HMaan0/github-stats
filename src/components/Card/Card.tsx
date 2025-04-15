@@ -1,7 +1,6 @@
 "use client";
 import { useEffect, memo, useState } from "react";
 import ExpandCard from "./ExpandCard";
-import PlusButton from "../PlusButton";
 import Line from "../Line";
 import GithubAvatar from "./GithubAvatar";
 import GithubGraph from "./githubGraph/GithubGraph";
@@ -13,6 +12,11 @@ import { useTime } from "@/Hooks/Time";
 import { differenceInMinutes, differenceInHours } from "date-fns";
 import Link from "next/link";
 import CardLoading from "./CardLoading";
+import PlusButton from "../PlusButton";
+import { getRedis, postRedis } from "@/lib/actions/postRedis";
+import { postDB } from "@/lib/actions/postDB";
+import { getTimeOfUser } from "@/lib/actions/getTimeOfUser";
+import { APIResponse } from "@harshmaan/github_rank_backend_types";
 
 const Card = () => {
   const [loading, setLoading] = useState(true);
@@ -23,6 +27,7 @@ const Card = () => {
   const scores = useScore((state) => state.scores);
   const username = session?.user?.username;
   const time = useTime((state) => state.time);
+
   useEffect(() => {
     if (users && users.length > 0) {
       setSortedUsers(users);
@@ -94,6 +99,7 @@ const Card = () => {
     </>
   );
 };
+
 const UserCard = ({
   user,
   index,
@@ -105,6 +111,45 @@ const UserCard = ({
   newUser?: boolean;
   lastFetched: string | null;
 }) => {
+  const [loading, setLoading] = useState(true);
+  const [userData, setUserData] = useState<APIResponse | null>(null);
+  const setScore = useScore((state) => state.setScore);
+  const sortedUsers = useSortedUsers((state) => state.sortedUsers);
+  const setNewUsername = useSortedUsers((state) => state.setNewUsername);
+  const setTime = useTime((state) => state.setTime);
+
+  useEffect(() => {
+    setLoading(true);
+    let data: { data: APIResponse } | undefined;
+
+    async function fetch() {
+      if (newUser) {
+        const res = await postRedis(user);
+        data = res;
+        if (!sortedUsers.includes(user)) {
+          setNewUsername(user);
+        }
+        await postDB(user);
+      } else {
+        const res = await getRedis(user);
+        const fetchedTime = await getTimeOfUser(user);
+        if (fetchedTime) {
+          setTime(user, fetchedTime);
+        }
+        data = res;
+      }
+
+      if (data) {
+        const userGithub: APIResponse = data?.data;
+        setUserData(userGithub);
+        setScore(user, userGithub.score);
+        setLoading(false);
+      }
+    }
+
+    fetch();
+  }, [user, newUser]);
+
   const now = new Date();
   const fetchedTime = lastFetched ? new Date(lastFetched) : null;
   let timeDiff = "0";
@@ -119,6 +164,7 @@ const UserCard = ({
       timeDiff = `${diffInHours} hour${diffInHours === 1 ? "" : "s"} ago`;
     }
   }
+
   return (
     <div
       key={user}
@@ -161,8 +207,9 @@ const UserCard = ({
       <Line />
       <GithubGraph user={user} />
       <PlusButton user={user} />
-      <ExpandCard user={user} newUser={newUser} />
+      <ExpandCard user={user} userData={userData} loading={loading} />
     </div>
   );
 };
+
 export default memo(Card);

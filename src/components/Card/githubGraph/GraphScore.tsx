@@ -8,7 +8,7 @@ const GraphScore = ({
   total,
   user,
 }: {
-  total: { 2024: number };
+  total: { 2025: number };
   user: string;
 }) => {
   const [data, setData] = useState({ public_repos: 0 });
@@ -33,7 +33,7 @@ const GraphScore = ({
         <p className="flex items-center ">
           <GoDotFill className="text-light-accent dark:text-accent" />
           Total contributions
-          <span className="dark:text-white text-black m-1">{total[2024]}</span>
+          <span className="dark:text-white text-black m-1">{total[2025]}</span>
         </p>
         <p className="flex items-center ">
           <GoDotFill className="text-light-accent dark:text-accent" />

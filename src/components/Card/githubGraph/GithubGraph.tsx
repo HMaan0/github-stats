@@ -6,11 +6,11 @@ import GithubGraphLoading from "./GithubGraphLoading";
 const GithubGraph = ({ user }: { user: string }) => {
   const [loading, setLoading] = useState(true);
   const [contributions, setContribution] = useState([]);
-  const [totalContributions, setTotalContribution] = useState({ 2024: 0 });
+  const [totalContributions, setTotalContribution] = useState({ 2025: 0 });
   useEffect(() => {
     async function fetch() {
       const response = await axios(
-        `https://github-contributions-api.jogruber.de/v4/${user}?y=2024`
+        `https://github-contributions-api.jogruber.de/v4/${user}?y=2025`
       );
       const contr = response.data.contributions;
       const totalContr = response.data.total;

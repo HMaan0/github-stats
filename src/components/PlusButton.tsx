@@ -5,12 +5,15 @@ const PlusButton = ({ user }: { user: string }) => {
   const setHide = useHide((state) => state.setHide);
   const [show, setShow] = useState(false);
   useEffect(() => {
-    setHide(user);
+    setHide(user, false);
   }, []);
   function handleClick() {
-    setHide(user);
-    setShow(!show);
+    setShow((prev) => !prev);
   }
+  useEffect(() => {
+    console.log(show);
+    setHide(user, show);
+  }, [show]);
 
   return (
     <>
