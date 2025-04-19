@@ -3,12 +3,7 @@ import { APIResponse } from "@harshmaan/github_rank_backend_types";
 import axios from "axios";
 import { createClient } from "redis";
 import prisma from "../db";
-const client = createClient({
-  socket: {
-    host: process.env.REDIS_HOST || "localhost",
-    port: Number(process.env.REDIS_PORT) || 6379,
-  },
-});
+const client = createClient();
 export async function postRedis(
   username: string
 ): Promise<{ data: APIResponse; time: string } | undefined> {
@@ -45,7 +40,7 @@ export async function getRedis(
 }
 
 export async function polling() {
-  const BATCH_SIZE = 40;
+  const BATCH_SIZE = 5;
   const INTERVAL = 60 * 60 * 1000;
 
   try {
@@ -69,14 +64,18 @@ export async function polling() {
           for (const user of batch) {
             try {
               const res = await axios(`${process.env.BACKEND_URL}${user}`);
-              const data: APIResponse = await res.data;
-              const time = new Date().toISOString();
-              await client.del(user);
-              await client.del(`${user}:time`);
-              await client.set(`${user}:time`, time);
-              await client.set(user, JSON.stringify(data));
+              if (res?.data?.data?.message || res?.data?.message) {
+                return;
+              } else {
+                const data: APIResponse = await res.data;
+                const time = new Date().toISOString();
+                // await client.del(user);
+                // await client.del(`${user}:time`);
+                await client.set(`${user}:time`, time);
+                await client.set(user, JSON.stringify(data));
+              }
             } catch (error) {
-              console.log(error);
+              console.error(error);
             }
           }
 
