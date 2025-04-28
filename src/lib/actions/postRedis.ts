@@ -45,7 +45,7 @@ export async function getRedis(
 }
 
 export async function polling() {
-  const BATCH_SIZE = 5;
+  const BATCH_SIZE = 8;
   const INTERVAL = 60 * 60 * 1000;
 
   try {
@@ -69,18 +69,14 @@ export async function polling() {
           for (const user of batch) {
             try {
               const res = await axios(`${process.env.BACKEND_URL}${user}`);
-              if (res?.data?.data?.message || res?.data?.message) {
-                return;
-              } else {
-                const data: APIResponse = await res.data;
-                const time = new Date().toISOString();
-                // await client.del(user);
-                // await client.del(`${user}:time`);
-                await client.set(`${user}:time`, time);
-                await client.set(user, JSON.stringify(data));
-              }
+              const data: APIResponse = await res.data;
+              const time = new Date().toISOString();
+              await client.del(user);
+              await client.del(`${user}:time`);
+              await client.set(`${user}:time`, time);
+              await client.set(user, JSON.stringify(data));
             } catch (error) {
-              console.error(error);
+              console.log(error);
             }
           }
 
