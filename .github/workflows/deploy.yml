@@ -33,6 +33,7 @@ jobs:
             ADMIN_USERNAME=${{secrets.ADMIN_USERNAME}}
             REDIS_HOST=${{secrets.REDIS_HOST}}
             REDIS_PORT=${{secrets.REDIS_PORT}}
+            Header=${{secrets.Header}}
           context: .
           file: ./dockerfile
           push: true
@@ -49,6 +50,7 @@ jobs:
           ADMIN_USERNAME: ${{secrets.ADMIN_USERNAME}}
           REDIS_HOST: ${{secrets.REDIS_HOST}}
           REDIS_PORT: ${{secrets.REDIS_PORT}}
+          Header: ${{secrets.Header}}
 
       - name: Verify Pushed Image
         run: docker pull harsh0maan/github_stats:latest

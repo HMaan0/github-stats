@@ -1,13 +1,19 @@
-"use server";
 import prisma from "../db";
 export async function getUsers() {
   try {
-    const usersArr = await prisma.users.findMany({
+    const users = await prisma.users.findMany({
+      orderBy: {
+        score: "desc",
+      },
       select: {
-        user: true,
+        id: true,
+        name: true,
+        score: true,
+        LastFetched: true,
+        data: true,
       },
     });
-    return usersArr;
+    return users;
   } catch (error) {
     console.log(error);
   }

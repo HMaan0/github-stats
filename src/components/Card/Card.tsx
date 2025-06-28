@@ -1,158 +1,102 @@
-"use client";
-import { useEffect, memo, useState } from "react";
 import ExpandCard from "./ExpandCard";
 import Line from "../Line";
 import GithubAvatar from "./GithubAvatar";
 import GithubGraph from "./githubGraph/GithubGraph";
-import { useScore } from "@/Hooks/useScore";
-import { useSession } from "next-auth/react";
-import { useUsers } from "@/Hooks/useUsers";
-import { useSortedUsers } from "@/Hooks/SortedUser";
-import { useTime } from "@/Hooks/Time";
 import { differenceInMinutes, differenceInHours } from "date-fns";
 import Link from "next/link";
 import CardLoading from "./CardLoading";
 import PlusButton from "../PlusButton";
-import { getRedis, postRedis } from "@/lib/actions/postRedis";
-import { postDB } from "@/lib/actions/postDB";
-import { getTimeOfUser } from "@/lib/actions/getTimeOfUser";
 import { APIResponse } from "@harshmaan/github_rank_backend_types";
+import { getUsers } from "@/lib/actions/getUsers";
+import { authOptions } from "@/lib/auth";
+import { getServerSession } from "next-auth";
 
-const Card = () => {
-  const [loading, setLoading] = useState(true);
-  const { data: session } = useSession();
-  const { users } = useUsers();
-  const sortedUsers = useSortedUsers((state) => state.sortedUsers);
-  const setSortedUsers = useSortedUsers((state) => state.setSortedUsers);
-  const scores = useScore((state) => state.scores);
-  const username = session?.user?.username;
-  const time = useTime((state) => state.time);
+interface Users {
+  id: number;
+  name: string;
+  score: number | null;
+  data: APIResponse | unknown;
+  LastFetched: Date | null;
+}
+interface Users {
+  id: number;
+  name: string;
+  score: number | null;
+  data: APIResponse | unknown;
+  LastFetched: Date | null;
+}
 
-  useEffect(() => {
-    if (users && users.length > 0) {
-      setSortedUsers(users);
-      setLoading(false);
-    }
-  }, [users]);
+const Card = async () => {
+  const session = await getServerSession(authOptions);
+  const users: Users[] | undefined = await getUsers();
 
-  useEffect(() => {
-    if (Object.keys(scores).length > 0) {
-      const sortedUsersScore = Object.entries(scores)
-        .map(([user, score]) => ({ user, score }))
-        .sort((a, b) => b.score - a.score);
+  if (!users) {
+    return (
+      <>
+        <CardLoading />
+        <CardLoading />
+        <CardLoading />
+        <CardLoading />
+        <CardLoading />
+      </>
+    );
+  }
 
-      setSortedUsers(sortedUsersScore.map((item) => item.user));
-      setLoading(false);
-    }
-  }, [scores]);
+  const sessionUserExists = session?.user?.username
+    ? users.some((user) => user.name === session.user.username)
+    : false;
 
   return (
     <>
-      {loading ? (
-        <>
-          <CardLoading />
-          <CardLoading />
-          <CardLoading />
-          <CardLoading />
-        </>
-      ) : (
-        <>
-          {sortedUsers.length > 0 ? (
-            <>
-              {username === undefined ? (
-                sortedUsers.map((user, index) => (
-                  <UserCard
-                    key={index}
-                    user={user}
-                    index={index}
-                    lastFetched={time[user]}
-                  />
-                ))
-              ) : username && !sortedUsers.includes(username) ? (
-                <UserCard
-                  user={username}
-                  index={0}
-                  newUser={true}
-                  lastFetched={time[username]}
-                />
-              ) : (
-                sortedUsers.map((user, index) => (
-                  <UserCard
-                    key={index}
-                    user={user}
-                    index={index}
-                    lastFetched={time[user]}
-                  />
-                ))
-              )}
-            </>
-          ) : (
-            <>
-              <CardLoading />
-              <CardLoading />
-              <CardLoading />
-              <CardLoading />
-            </>
-          )}
-        </>
+      {session?.user?.username && !sessionUserExists && (
+        <UserCard
+          key={`new-user-${session.user.username}`}
+          user={session.user.username}
+          userData={null}
+          index={-1}
+          lastFetched={null}
+          score={null}
+          newUser={true}
+        />
       )}
+
+      {users.map((user, index) => (
+        <UserCard
+          key={user.name}
+          user={user.name}
+          userData={
+            user.data && typeof user.data === "object" && user.data !== null
+              ? (user.data as APIResponse)
+              : null
+          }
+          index={index}
+          lastFetched={user.LastFetched}
+          score={user.score}
+          newUser={false}
+        />
+      ))}
     </>
   );
 };
 
 const UserCard = ({
   user,
+  userData,
   index,
-  newUser,
   lastFetched,
+  score,
+  newUser,
 }: {
   user: string;
+  userData: APIResponse | null;
   index: number;
+  lastFetched: Date | null | undefined;
+  score: number | null;
   newUser?: boolean;
-  lastFetched: string | null;
 }) => {
-  const [loading, setLoading] = useState(true);
-  const [userData, setUserData] = useState<APIResponse | null>(null);
-  const setScore = useScore((state) => state.setScore);
-  const sortedUsers = useSortedUsers((state) => state.sortedUsers);
-  const setNewUsername = useSortedUsers((state) => state.setNewUsername);
-  const setTime = useTime((state) => state.setTime);
-
-  useEffect(() => {
-    setLoading(true);
-    let data: { data: APIResponse } | undefined;
-
-    async function fetch() {
-      if (newUser) {
-        const res = await postRedis(user);
-        data = res;
-        if (!sortedUsers.includes(user)) {
-          setNewUsername(user);
-        }
-        await postDB(user);
-      } else {
-        const res = await getRedis(user);
-        const fetchedTime = await getTimeOfUser(user);
-        if (fetchedTime) {
-          setTime(user, fetchedTime);
-        }
-        data = res;
-      }
-
-      if (data) {
-        const userGithub: APIResponse = data?.data;
-        setUserData(userGithub);
-        setScore(user, userGithub.score);
-        setLoading(false);
-      }
-    }
-
-    fetch();
-  }, [user, newUser]);
-
   const now = new Date();
-  const fetchedTime = lastFetched ? new Date(lastFetched) : null;
-  let timeDiff = "0";
+  const fetchedTime = lastFetched ? lastFetched : null;
+  let timeDiff = `0`;
 
   if (fetchedTime) {
     const diffInMinutes = differenceInMinutes(now, fetchedTime);
@@ -196,7 +140,7 @@ const UserCard = ({
             } ${index === 1 && "from-slate-300 to-slate-500"} ${
               index === 2 && "from-[#db6c2b] to-[#673208]"
             } ${
-              index > 2 &&
+              (index == -1 || index > 2) &&
               "dark:from-primary dark:to-accent from-light-accent to-light-primary"
             }`}
           >
@@ -205,11 +149,15 @@ const UserCard = ({
         </div>
       </div>
       <Line />
-      <GithubGraph user={user} />
+      <GithubGraph user={user} score={score} />
       <PlusButton user={user} />
-      <ExpandCard user={user} userData={userData} loading={loading} />
+      <ExpandCard
+        user={user}
+        userData={userData}
+        loading={newUser ? true : false}
+      />
     </div>
   );
 };
 
-export default memo(Card);
+export default Card;

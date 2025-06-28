@@ -67,7 +67,7 @@ const Repo = ({
             <div className="flex flex-col items-center mt-5 ">
               <FaGithub className="text-4xl text-accent" />
               <p className="text-center text-lg font-semibold text-accent">
-                Please wait our servers are fetching your github data
+                Our servers are fetching your github data revisit us later
               </p>
             </div>
           )}

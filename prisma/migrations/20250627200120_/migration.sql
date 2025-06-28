@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Users" ALTER COLUMN "data" DROP NOT NULL,
+ALTER COLUMN "score" DROP NOT NULL;

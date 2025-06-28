@@ -1,36 +1,20 @@
-"use client";
-import React, { useEffect, useState } from "react";
+import React, { Suspense } from "react";
 import Image from "next/image";
-import axios from "axios";
 import ImageLoading from "../ImageLoading";
 
-const GithubAvatar = ({ user }: { user: string }) => {
-  const [avatarUrl, setAvatarUrl] = useState("");
-  const [loading, setLoading] = useState(true);
-  useEffect(() => {
-    async function fetch() {
-      const res = await axios(`https://api.github.com/users/${user}`);
-      const url = res.data.avatar_url;
-      setAvatarUrl(url);
-      setLoading(false);
-    }
-    fetch();
-  }, [user]);
-
+const GithubAvatar = async ({ user }: { user: string }) => {
   return (
     <>
       <div className="flex items-center h-max justify-center  ">
-        {loading ? (
-          <ImageLoading />
-        ) : (
+        <Suspense fallback={<ImageLoading />}>
           <Image
-            src={avatarUrl}
+            src={`https://github.com/${user}.png`}
             width={"85"}
             height={"85"}
             alt="gitHub avatars"
             className="rounded-lg"
           />
-        )}
+        </Suspense>
       </div>
     </>
   );

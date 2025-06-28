@@ -14,6 +14,9 @@ datasource db {
 }
 
 model Users {
-  id         String      @id @default(uuid())
-  user       String[]
+  id      Int    @id @default(autoincrement())
+  name    String @unique
+  score   Int?
+  data    Json?
+  LastFetched   DateTime?
 }

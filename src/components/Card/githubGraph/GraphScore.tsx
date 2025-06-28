@@ -1,24 +1,30 @@
-"use client";
 import { GoDotFill } from "react-icons/go";
 import Score from "./Score";
-import { useEffect, useState } from "react";
 import axios from "axios";
 
-const GraphScore = ({
+const GraphScore = async ({
   total,
   user,
+  score,
 }: {
   total: { 2025: number };
   user: string;
+  score: number | null;
 }) => {
-  const [data, setData] = useState({ public_repos: 0 });
-  useEffect(() => {
-    async function fetch() {
-      const userRes = await axios(`https://api.github.com/users/${user}`);
-      setData(userRes.data);
-    }
-    fetch();
-  }, [user]);
+  let data = { public_repos: 0 };
+  try {
+    const userRes = await axios({
+      url: `https://api.github.com/users/${user}`,
+      headers: {
+        authorization: `Bearer ${process.env.Header}`,
+        "Content-Type": "application/json",
+      },
+    });
+    data = userRes.data;
+  } catch (error) {
+    console.error("GitHub API error:", error);
+    // Handle error gracefully
+  }
 
   return (
     <>
@@ -38,7 +44,7 @@ const GraphScore = ({
         <p className="flex items-center ">
           <GoDotFill className="text-light-accent dark:text-accent" />
           Score
-          <Score user={user} />
+          <Score score={score} />
         </p>
       </div>
     </>

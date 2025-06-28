@@ -1,10 +1,9 @@
-"use client";
-import { useScore } from "@/Hooks/useScore";
-const Score = ({ user }: { user: string }) => {
-  const score = useScore((state) => state.getScore(user));
+const Score = ({ score }: { score: number | null }) => {
   return (
     <>
-      {score && <span className="dark:text-white text-black m-1">{score}</span>}
+      <span className="dark:text-white text-black m-1">
+        {score ? score : 0}
+      </span>
     </>
   );
 };

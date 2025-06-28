@@ -7,11 +7,15 @@ import { motion } from "framer-motion";
 import DarkModeButton from "./DarkModeButton";
 import LoginButton from "./LoginButton";
 import { useSession } from "next-auth/react";
+import { BsGithub } from "react-icons/bs";
+import { FaStar } from "react-icons/fa";
+import Link from "next/link";
 
 const Navbar = () => {
   const [show, setShow] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
   const { data: session, status } = useSession();
+
   const controlNavbar = () => {
     if (window.scrollY > lastScrollY) {
       setShow(false);
@@ -19,6 +23,45 @@ const Navbar = () => {
       setShow(true);
     }
     setLastScrollY(window.scrollY);
+  };
+
+  const scrollToUsername = () => {
+    const selectors = [
+      `[data-username="${session?.user?.username}"]`,
+      `#username-${session?.user?.username}`,
+      ".username",
+      '[class*="username"]',
+    ];
+
+    let targetElement = null;
+
+    for (const selector of selectors) {
+      targetElement = document.querySelector(selector);
+      if (targetElement) break;
+    }
+
+    if (!targetElement && session?.user?.username) {
+      const allElements = document.querySelectorAll("*");
+      for (const element of allElements) {
+        if (
+          element.textContent?.includes(session.user.username) &&
+          element.textContent.trim() === session.user.username
+        ) {
+          targetElement = element;
+          break;
+        }
+      }
+    }
+
+    if (targetElement) {
+      targetElement.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+        inline: "nearest",
+      });
+    } else {
+      console.warn("Username element not found on the page");
+    }
   };
 
   useEffect(() => {
@@ -49,6 +92,17 @@ const Navbar = () => {
           <DarkModeButton />
           <FiMoon size={25} />
         </div>
+        <Link href={"https://github.com/HMaan0/github-stats"} target={"blank"}>
+          <div className="flex justify-between items-center w-full gap-3 p-2 rounded-lg border dark:border-0 border-border-theme-light bg-light-card  dark:bg-black text-sm group">
+            <div className="flex justify-center items-center gap-2">
+              <BsGithub size={20} /> GitHub
+            </div>
+            <FaStar
+              size={15}
+              className="group-hover:text-yellow-400 transition-colors duration-200"
+            />
+          </div>
+        </Link>
         {status !== "authenticated" ? (
           <LoginButton />
         ) : (
@@ -59,7 +113,8 @@ const Navbar = () => {
                 width={50}
                 height={50}
                 alt="GitHub avatar"
-                className="rounded-lg"
+                className="rounded-lg cursor-pointer hover:opacity-80 transition-opacity duration-200"
+                onClick={scrollToUsername}
               />
             )}
           </>
