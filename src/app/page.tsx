@@ -3,6 +3,7 @@ import LoginDialog from "@/components/Login/LoginDialog";
 import Navbar from "@/components/Navbar";
 import React from "react";
 import Section from "./Section";
+import Card from "@/components/Card/Card";
 
 export default function Home() {
   return (
@@ -10,7 +11,9 @@ export default function Home() {
       <LoginDialog />
       <Navbar />
       <Header />
-      <Section />
+      <Section>
+        <Card />
+      </Section>
     </main>
   );
 }

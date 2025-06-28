@@ -1,10 +1,8 @@
-import Card from "@/components/Card/Card";
-
-const Section = () => {
+const Section = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <section className="flex flex-col  gap-10 md:px-14 xl:px-36">
-        <Card />
+        {children}
       </section>
     </>
   );

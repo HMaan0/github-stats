@@ -68,17 +68,6 @@ jobs:
             echo "Removing existing container..."
             sudo docker rm github_stats || true
 
-            echo "Removing existing network"
-            sudo docker network rm my_network || true
-
-            echo "Creating new network"
-            sudo docker network create my_network
-
-            echo "Starting Redis expects: REDIS IMAGE & VOLUME"
-            sudo docker kill redis_container || true
-            sudo docker rm redis_container || true
-            sudo docker run -d --name redis_container -v redis_volume:/data --network my_network -p 6379:6379 redis redis-server --appendonly yes
-
             echo "Pulling the latest Docker image..."
             sudo docker pull harsh0maan/github_stats:latest
 
