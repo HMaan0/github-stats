@@ -8,16 +8,9 @@ import CardLoading from "./CardLoading";
 import PlusButton from "../PlusButton";
 import { APIResponse } from "@harshmaan/github_rank_backend_types";
 import { getUsers } from "@/lib/actions/getUsers";
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth";
+import { Suspense } from "react";
+import UserSpecificCard from "./UserSpecificCard";
 
-interface Users {
-  id: number;
-  name: string;
-  score: number | null;
-  data: APIResponse | unknown;
-  LastFetched: Date | null;
-}
 interface Users {
   id: number;
   name: string;
@@ -27,7 +20,6 @@ interface Users {
 }
 
 const Card = async () => {
-  const session = await getServerSession(authOptions);
   const users: Users[] | undefined = await getUsers();
 
   if (!users) {
@@ -42,23 +34,11 @@ const Card = async () => {
     );
   }
 
-  const sessionUserExists = session?.user?.username
-    ? users.some((user) => user.name === session.user.username)
-    : false;
-
   return (
     <>
-      {session?.user?.username && !sessionUserExists && (
-        <UserCard
-          key={`new-user-${session.user.username}`}
-          user={session.user.username}
-          userData={null}
-          index={-1}
-          lastFetched={null}
-          score={null}
-          newUser={true}
-        />
-      )}
+      <Suspense fallback={null}>
+        <UserSpecificCard users={users} />
+      </Suspense>
 
       {users.map((user, index) => (
         <UserCard
@@ -79,7 +59,7 @@ const Card = async () => {
   );
 };
 
-const UserCard = ({
+export const UserCard = ({
   user,
   userData,
   index,
