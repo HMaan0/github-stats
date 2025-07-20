@@ -4,6 +4,7 @@ import Navbar from "@/components/Navbar";
 import React from "react";
 import Section from "./Section";
 import Card from "@/components/Card/Card";
+import Search from "@/components/Search/Search";
 
 export const revalidate = 3600;
 
@@ -14,6 +15,7 @@ export default function Home() {
       <Navbar />
       <Header />
       <Section>
+        <Search />
         <Card />
       </Section>
     </main>
