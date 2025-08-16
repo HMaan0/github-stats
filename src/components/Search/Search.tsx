@@ -1,5 +1,9 @@
 const Search = () => {
-  return <div>Search</div>;
+  return (
+    <div>
+      <input placeholder="enter name here"></input>Search
+    </div>
+  );
 };
 
 export default Search;
