@@ -11,7 +11,7 @@ const Header = () => {
       </h1>
       <h1 className="text-border-theme-light/50 dark:text-border-theme text-xl hidden md:block">
         A platform where you can check top github profiles and there public
-        repositories, open source contribution, collaborations.
+        repositories, open source contribution.
       </h1>
     </header>
   );
