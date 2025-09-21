@@ -4,9 +4,7 @@ import GithubAvatar from "./GithubAvatar";
 import GithubGraph from "./githubGraph/GithubGraph";
 import { differenceInMinutes, differenceInHours } from "date-fns";
 import Link from "next/link";
-import CardLoading from "./CardLoading";
 import PlusButton from "../PlusButton";
-import { APIResponse } from "@harshmaan/github_rank_backend_types";
 import { getUsers } from "@/lib/actions/getUsers";
 import { Suspense } from "react";
 import UserSpecificCard from "./UserSpecificCard";
@@ -15,7 +13,6 @@ interface Users {
   id: number;
   name: string;
   score: number | null;
-  data: APIResponse | unknown;
   LastFetched: Date | null;
 }
 
@@ -23,15 +20,7 @@ const Card = async () => {
   const users: Users[] | undefined = await getUsers();
 
   if (!users) {
-    return (
-      <>
-        <CardLoading />
-        <CardLoading />
-        <CardLoading />
-        <CardLoading />
-        <CardLoading />
-      </>
-    );
+    return null;
   }
 
   return (
@@ -44,11 +33,6 @@ const Card = async () => {
         <UserCard
           key={user.name}
           user={user.name}
-          userData={
-            user.data && typeof user.data === "object" && user.data !== null
-              ? (user.data as APIResponse)
-              : null
-          }
           index={index}
           lastFetched={user.LastFetched}
           score={user.score}
@@ -61,14 +45,12 @@ const Card = async () => {
 
 export const UserCard = ({
   user,
-  userData,
   index,
   lastFetched,
   score,
   newUser,
 }: {
   user: string;
-  userData: APIResponse | null;
   index: number;
   lastFetched: Date | null | undefined;
   score: number | null;
@@ -131,11 +113,7 @@ export const UserCard = ({
       <Line />
       <GithubGraph user={user} score={score} />
       <PlusButton user={user} />
-      <ExpandCard
-        user={user}
-        userData={userData}
-        loading={newUser ? true : false}
-      />
+      <ExpandCard user={user} loading={newUser ? true : false} />
     </div>
   );
 };

@@ -20,18 +20,18 @@ import {
 } from "@harshmaan/github_rank_backend_types";
 import LoadingSpinner from "../LoadingSpinner";
 import NoRepositories from "../NoRepositories";
+import { getUserData } from "@/lib/actions/getUserData";
 
 const Repo = ({
   user,
   selected,
-  userData,
   loading,
 }: {
   user: string;
   selected: string;
-  userData: APIResponse | null;
   loading: boolean;
 }) => {
+  const [userData, setUserData] = useState<APIResponse | null>(null);
   const [ownedRepos, setOwnedRepos] = useState<allRepos | null>(null);
   const [collaboratedRepos, setCollaboratedRepos] =
     useState<collaboratedRepos | null>(null);
@@ -47,6 +47,16 @@ const Repo = ({
       setForkedRepos(userData.data.forkedRepos);
     }
   }, [userData]);
+
+  useEffect(() => {
+    async function getUserRepo() {
+      const data: APIResponse | unknown = await getUserData(user);
+      if (data && typeof data === "object" && data !== null) {
+        setUserData(data as APIResponse);
+      }
+    }
+    getUserRepo();
+  }, [user]);
 
   useEffect(() => {
     if (selected === "Owned Repos") {

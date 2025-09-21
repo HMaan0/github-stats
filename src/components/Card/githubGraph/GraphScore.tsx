@@ -23,7 +23,6 @@ const GraphScore = async ({
     data = userRes.data;
   } catch (error) {
     console.error("GitHub API error:", error);
-    // Handle error gracefully
   }
 
   return (

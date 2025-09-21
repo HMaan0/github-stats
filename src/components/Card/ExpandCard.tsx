@@ -4,17 +4,8 @@ import Repo from "../Repo/Repo";
 import Line from "../Line";
 import { useHide } from "@/Hooks/Hide";
 import { useState } from "react";
-import { APIResponse } from "@harshmaan/github_rank_backend_types";
 
-const ExpandCard = ({
-  user,
-  userData,
-  loading,
-}: {
-  user: string;
-  userData: APIResponse | null;
-  loading: boolean;
-}) => {
+const ExpandCard = ({ user, loading }: { user: string; loading: boolean }) => {
   const [selected, setSelected] = useState("Owned Repos");
   const hideStates = useHide((state) => state.hide);
 
@@ -32,12 +23,7 @@ const ExpandCard = ({
               setSelected={setSelected}
             />
             <div className="flex flex-col-reverse gap-5 ">
-              <Repo
-                user={user}
-                selected={selected}
-                userData={userData}
-                loading={loading}
-              />
+              <Repo user={user} selected={selected} loading={loading} />
             </div>
           </>
         )}

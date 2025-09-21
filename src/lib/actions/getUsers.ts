@@ -10,7 +10,6 @@ export async function getUsers() {
         name: true,
         score: true,
         LastFetched: true,
-        data: true,
       },
     });
     return users;
